@@ -52,6 +52,49 @@ pipeline {
             }
         }
 
+        stage('Fetch PR Details') {
+            steps {
+                script {
+                    // Fetch pull request details using GitHub API
+                    def prDetails = sh(
+                        script: """
+                            curl -s -H "Accept: application/vnd.github.v3+json" \
+                            ${GITHUB_API_URL}/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}""",
+                        returnStdout: true
+                    ).trim()
+
+                    def jsonSlurper = new groovy.json.JsonSlurper()
+                    def pr = jsonSlurper.parseText(prDetails)   
+
+                    // Access PR title
+                    def prTitle = pr.title      
+
+                    // Fetch pull request comments
+                    def commentsDetails = sh(
+                        script: """
+                            curl -s -H "Accept: application/vnd.github.v3+json" \
+                            ${GITHUB_API_URL}/${env.OWNER}/${env.REPO}/issues/${env.PR_ID}/comments""",
+                        returnStdout: true
+                    ).trim()        
+
+                    def commentsData = jsonSlurper.parseText(commentsDetails)       
+
+                    // Convert LazyMap to regular Map for serializability
+                    def serializedComments = commentsData.collectEntries { [(it.id): it.body] }     
+
+                    // Check for "quick fix" in PR title or comments
+                    def containsQuickFix = serializedComments.any { it.value?.contains("quick fix") }       
+
+                    // Check conditions
+                    if (!prTitle.contains("quick fix") || !containsQuickFix || !prTitle.contains("quickfix")) {
+                        error "Pipeline aborted: PR title or comments do not contain 'quick fix'."
+                    }       
+
+                    echo "PR is valid. Proceeding with pipeline."
+                }
+            }
+        }
+
 
         stage('Fetch PR Files') {
             steps {
