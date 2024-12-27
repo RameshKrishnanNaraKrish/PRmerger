@@ -62,13 +62,13 @@ pipeline {
                         https://api.github.com/repos/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}
                         """,
                         returnStdout: true
-                    ).trim()
-                    
+                    ).trim()        
+
                     def jsonSlurper = new groovy.json.JsonSlurper()
-                    def prData = jsonSlurper.parseText(prDetails)
+                    def prData = jsonSlurper.parseText(prDetails)       
 
                     // Access PR title
-                    def prTitle = prData.title
+                    def prTitle = prData.title      
 
                     // Fetch pull request comments
                     def commentsDetails = sh(
@@ -77,27 +77,26 @@ pipeline {
                         https://api.github.com/repos/${env.OWNER}/${env.REPO}/issues/${env.PR_ID}/comments
                         """,
                         returnStdout: true
-                    ).trim()
-                    
-                    def commentsData = jsonSlurper.parseText(commentsDetails)
+                    ).trim()        
 
-                    sh 'echo ${commentsData}'
+                    def commentsData = jsonSlurper.parseText(commentsDetails)       
 
-                    console.log(commentsData)
-
+                    // Convert LazyMap to regular Map for serializability
+                    def serializedComments = commentsData.collectEntries { [(it.id): it.body] }     
 
                     // Check for "quick fix" in PR title or comments
-                    def containsQuickFix = commentsData.any { it.body?.contains("quick fix") }
+                    def containsQuickFix = serializedComments.any { it.value?.contains("quick fix") }       
 
                     // Check conditions
                     if (!prTitle.contains("quick fix") || !containsQuickFix || !prTitle.contains("quickfix")) {
                         error "Pipeline aborted: PR title or comments do not contain 'quick fix'."
-                    }
+                    }       
 
                     echo "PR is valid. Proceeding with pipeline."
                 }
             }
         }
+
 
         stage('Fetch PR Files') {
             steps {
