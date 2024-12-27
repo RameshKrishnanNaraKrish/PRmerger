@@ -71,7 +71,7 @@ pipeline {
 
                     echo "PR Title: ${prTitle}"
 
-                    if (!prTitle.contains("quick fix") || !prTitle.contains("quickfix")) {
+                    if (!prTitle.contains("quick fix") && !prTitle.contains("quickfix")) {
                         error "Pipeline aborted: PR title do not contain 'quick fix'."
                     }       
 
