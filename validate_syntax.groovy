@@ -102,5 +102,6 @@ def call(String modifiedFiles) {
         error "Syntax validation failed. Please fix the issues and try again."
     } else {
         echo "Syntax validation passed successfully."
+        }
     }
 }
