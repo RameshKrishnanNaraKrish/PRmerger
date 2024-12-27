@@ -78,13 +78,7 @@ pipeline {
             steps {
                 script {
                     // Load the external syntax validation script
-                    def validateSyntax = load 'validate_syntax.groovy'
-
-                    echo "Script loaded successfully!"
-
-                    def modifiedFilesList = env.MODIFIED_FILES.split(',')
-
-                    validateSyntax(modifiedFilesList)
+                    sh "python3 src/validate_syntax.py ${env.MODIFIED_FILES}"
                 }
             }
         }
