@@ -6,6 +6,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--MODIFIED_FILES", action="store", type=str, help="Modified file list")
+    args = parser.parse_args()
 
     modified_files = args.MODIFIED_FILES
 
