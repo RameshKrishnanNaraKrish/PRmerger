@@ -77,16 +77,12 @@ pipeline {
                         returnStdout: true
                     ).trim()        
 
-                    def commentsData = jsonSlurper.parseText(commentsDetails)       
+                    def commentsData = jsonSlurper.parseText(commentsDetails)
 
-                    // Convert LazyMap to regular Map for serializability
-                    def serializedComments = commentsData.collectEntries { [(it.id): it.body] }     
-
-                    // Check for "quick fix" in PR title or comments
-                    def containsQuickFix = serializedComments.any { it.value?.contains("quick fix") }       
+                    def commentsBody = commentsData.body
 
                     // Check conditions
-                    if (!prTitle.contains("quick fix") || !containsQuickFix || !prTitle.contains("quickfix")) {
+                    if (!prTitle.contains("quick fix") || !commentsBody.contains("quick fix") || !prTitle.contains("quickfix")) {
                         error "Pipeline aborted: PR title or comments do not contain 'quick fix'."
                     }       
 
