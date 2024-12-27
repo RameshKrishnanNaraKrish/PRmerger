@@ -80,6 +80,12 @@ pipeline {
                     ).trim()
                     
                     def commentsData = jsonSlurper.parseText(commentsDetails)
+
+                    sh 'echo ${commentsData}'
+
+                    console.log(commentsData)
+
+
                     // Check for "quick fix" in PR title or comments
                     def containsQuickFix = commentsData.any { it.body?.contains("quick fix") }
 
