@@ -18,7 +18,7 @@ def main():
             "project": {
                 "key": args.projectkey
             },
-            "summary": f"PR #{args.prid} merged successfully!",
+            "summary": f"PR #{args.prid} merged successfully for the repository {args.repo}!",
             "description": {
                 "type": "doc",
                 "version": 1,
@@ -28,7 +28,7 @@ def main():
                         "content": [
                             {
                                 "type": "text",
-                                "text": f"PR #{args.prid} merged successfully for the repository #{args.repo}!\nPipeline run by #{args.buildusername}"
+                                "text": f"PR #{args.prid} merged successfully\n Repository: {args.repo}!\nPipeline run by: {args.buildusername}"
                             }
                         ]
                     }
