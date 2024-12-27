@@ -93,7 +93,8 @@ def call(String modifiedFiles) {
                 echo "Syntax issues found in ${file}"
                 hasErrors = true
             }
-        else {
+        } else {
+            // No validation rules for other file types
             echo "No syntax validation rules defined for ${file}"
         }
     }
@@ -102,6 +103,5 @@ def call(String modifiedFiles) {
         error "Syntax validation failed. Please fix the issues and try again."
     } else {
         echo "Syntax validation passed successfully."
-        }
     }
 }

@@ -79,7 +79,10 @@ pipeline {
                 script {
                     // Load the external syntax validation script
                     def validateSyntax = load 'validate_syntax.groovy'
-                    validateSyntax(env.MODIFIED_FILES)
+
+                    def modifiedFilesList = env.MODIFIED_FILES.split(',')
+
+                    validateSyntax(modifiedFilesList)
                 }
             }
         }
