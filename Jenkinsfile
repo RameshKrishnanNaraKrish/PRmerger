@@ -51,11 +51,11 @@ pipeline {
             }
         }
 
-        stage('Checkout Repository') {
+        /* stage('Checkout Repository') {
             steps {
                 git branch: 'main', url: "https://github.com/${env.OWNER}/${env.REPO}.git"
             }
-        }
+        } */
 
         stage('Merge PR Automatically') {
             steps {
