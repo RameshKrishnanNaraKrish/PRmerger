@@ -80,56 +80,10 @@ pipeline {
             }
         }
 
-        /*stage('Create JIRA Ticket') {
-            steps {
-                script {
-                    // Construct the JSON payload for the JIRA API
-                    def jiraPayload = """
-                    {
-                        "fields": {
-                            "project": {
-                                "key": "${env.JIRA_PROJECT_KEY}"
-                            },
-                            "summary": "PR #${env.PR_ID} merged successfully!",
-                            "description": {
-                                "type": "doc",
-                                "version": 1,
-                                "content": [
-                                    {
-                                        "type": "paragraph",
-                                        "content": [
-                                            {
-                                                "type": "text",
-                                                "text": "PR #${env.PR_ID} merged successfully!"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            "issuetype": {
-                                "name": "Task"
-                            }
-                        }
-                    }
-                    """
-                    // Call JIRA API using curl
-                    sh """
-                        curl -u ${env.JIRA_USERNAME}:${env.JIRA_API_TOKEN} \
-                        -H "Content-Type: application/json" \
-                        -X POST \
-                        -d '${jiraPayload}' \
-                        ${env.JIRA_URL}/rest/api/3/issue/
-                    """
-                }
-            }
-        }*/
-
         stage('Create JIRA Ticket') {
             steps {
                 script {
-                    sh "
-                        python3 src/jira_integration.py -u '${env.JIRA_URL}'  -a '${env.JIRA_API_TOKEN}' -p '${env.JIRA_PROJECT_KEY}' -pr '${env.PR_ID}' -ju '${env.JIRA_USERNAME}' -bu '${env.USER_FULL_NAME}' -r '${env.REPO}'"
-                    }
+                    sh "python3 src/jira_integration.py -u '${env.JIRA_URL}'  -a '${env.JIRA_API_TOKEN}' -p '${env.JIRA_PROJECT_KEY}' -pr '${env.PR_ID}' -ju '${env.JIRA_USERNAME}' -bu '${env.USER_FULL_NAME}' -r '${env.REPO}'"
                 }
             }
         }
