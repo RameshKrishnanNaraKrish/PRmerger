@@ -2,6 +2,10 @@ def call(String modifiedFiles) {
     def hasErrors = false
     def files = modifiedFiles.split(',')
 
+    echo "modifiedFiles: ${file}"
+
+    echo "modifiedFiles: ${modifiedFiles}"
+
     try {
         files.each { file ->
             if (file.endsWith('.js')) {
