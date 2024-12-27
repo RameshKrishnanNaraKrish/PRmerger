@@ -29,6 +29,29 @@ pipeline {
             }
         }
 
+        stage('Extract PR Details from URL') {
+            steps {
+                script {
+                    if (!params.PR_URL) {
+                        error "PR_URL parameter is required!"
+                    }
+
+                    def matcher = params.PR_URL =~ /https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
+                    if (!matcher.matches()) {
+                        error 'Invalid PR URL format. Expected format: https://github.com/owner/repo/pull/123'
+                    }
+
+                    env.OWNER = matcher[0][1]
+                    env.REPO = matcher[0][2]
+                    env.PR_ID = matcher[0][3]
+
+                    echo "Extracted Owner: ${env.OWNER}"
+                    echo "Extracted Repo: ${env.REPO}"
+                    echo "Extracted PR ID: ${env.PR_ID}"
+                }
+            }
+        }
+
         stage('Fetch PR Details') {
             steps {
                 script {
@@ -101,28 +124,6 @@ pipeline {
             }
         }
 
-        stage('Extract PR Details from URL') {
-            steps {
-                script {
-                    if (!params.PR_URL) {
-                        error "PR_URL parameter is required!"
-                    }
-
-                    def matcher = params.PR_URL =~ /https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/
-                    if (!matcher.matches()) {
-                        error 'Invalid PR URL format. Expected format: https://github.com/owner/repo/pull/123'
-                    }
-
-                    env.OWNER = matcher[0][1]
-                    env.REPO = matcher[0][2]
-                    env.PR_ID = matcher[0][3]
-
-                    echo "Extracted Owner: ${env.OWNER}"
-                    echo "Extracted Repo: ${env.REPO}"
-                    echo "Extracted PR ID: ${env.PR_ID}"
-                }
-            }
-        }
 
         stage('Merge PR Automatically') {
             steps {
