@@ -23,7 +23,80 @@ pipeline {
                     wrap([$class: 'BuildUser']) {
                         env.USER_NAME = "${env.BUILD_USER}"
                         env.USER_FULL_NAME = "${env.BUILD_USER_FIRST_NAME} ${env.BUILD_USER_LAST_NAME}"
+                        env.USER_EMAIL = "${env.BUILD_USER_EMAIL}"
                     }
+                }
+            }
+        }
+
+        stage('Fetch PR Details') {
+            steps {
+                script {
+                    // Fetch pull request details using GitHub API
+                    def prDetails = sh(
+                        script: """
+                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        https://api.github.com/repos/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    
+                    def jsonSlurper = new groovy.json.JsonSlurper()
+                    def prData = jsonSlurper.parseText(prDetails)
+
+                    // Access PR title
+                    def prTitle = prData.title
+
+                    // Fetch pull request comments
+                    def commentsDetails = sh(
+                        script: """
+                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        https://api.github.com/repos/${env.OWNER}/${env.REPO}/issues/${env.PR_ID}/comments
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    
+                    def commentsData = jsonSlurper.parseText(commentsDetails)
+                    // Check for "quick fix" in PR title or comments
+                    def containsQuickFix = commentsData.any { it.body?.contains("quick fix") }
+
+                    // Check conditions
+                    if (!prTitle.contains("quick fix") || !containsQuickFix || !prTitle.contains("quickfix")) {
+                        error "Pipeline aborted: PR title or comments do not contain 'quick fix'."
+                    }
+
+                    echo "PR is valid. Proceeding with pipeline."
+                }
+            }
+        }
+
+        stage('Fetch PR Files') {
+            steps {
+                script {
+                    // Fetch the list of files modified in the PR
+                    def modifiedFiles = sh(
+                        script: """
+                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        https://api.github.com/repos/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}/files | jq -r '.[].filename'
+                        """,
+                        returnStdout: true
+                    ).trim().split("\n")
+
+                    // Print the modified files
+                    echo "Modified files: ${modifiedFiles.join(', ')}"
+
+                    // Save the file list for the next stage
+                    env.MODIFIED_FILES = modifiedFiles.join(',')
+                }
+            }
+        }
+
+        stage('Validate Syntax') {
+            steps {
+                script {
+                    // Load the external syntax validation script
+                    def validateSyntax = load 'validate_syntax.groovy'
+                    validateSyntax(env.MODIFIED_FILES)
                 }
             }
         }
@@ -50,12 +123,6 @@ pipeline {
                 }
             }
         }
-
-        /* stage('Checkout Repository') {
-            steps {
-                git branch: 'main', url: "https://github.com/${env.OWNER}/${env.REPO}.git"
-            }
-        } */
 
         stage('Merge PR Automatically') {
             steps {
