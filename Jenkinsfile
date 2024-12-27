@@ -58,7 +58,7 @@ pipeline {
                     // Fetch pull request details using GitHub API
                     def prDetails = sh(
                         script: """
-                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
                         https://api.github.com/repos/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}
                         """,
                         returnStdout: true
@@ -73,7 +73,7 @@ pipeline {
                     // Fetch pull request comments
                     def commentsDetails = sh(
                         script: """
-                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
                         https://api.github.com/repos/${env.OWNER}/${env.REPO}/issues/${env.PR_ID}/comments
                         """,
                         returnStdout: true
@@ -99,7 +99,7 @@ pipeline {
                     // Fetch the list of files modified in the PR
                     def modifiedFiles = sh(
                         script: """
-                        curl -s -H "Authorization: token ${env.GITHUB_TOKEN}" \
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
                         https://api.github.com/repos/${env.OWNER}/${env.REPO}/pulls/${env.PR_ID}/files | jq -r '.[].filename'
                         """,
                         returnStdout: true
