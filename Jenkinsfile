@@ -67,7 +67,9 @@ pipeline {
                     def pr = jsonSlurper.parseText(prDetails)   
 
                     // Access PR title
-                    def prTitle = pr.title      
+                    def prTitle = pr.title
+
+                    echo "PR Title: ${prTitle}"      
 
                     // Fetch pull request comments
                     def commentsDetails = sh(
@@ -79,7 +81,11 @@ pipeline {
 
                     def commentsData = jsonSlurper.parseText(commentsDetails)
 
+                    echo "comments Data: ${commentsData}"
+
                     def commentsBody = commentsData.body
+
+                    echo "comments Body: ${commentsBody}"
 
                     // Check conditions
                     if (!prTitle.contains("quick fix") || !commentsBody.contains("quick fix") || !prTitle.contains("quickfix")) {
