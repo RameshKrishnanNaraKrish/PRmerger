@@ -80,6 +80,8 @@ pipeline {
                     // Load the external syntax validation script
                     def validateSyntax = load 'validate_syntax.groovy'
 
+                    echo "Script loaded successfully!"
+
                     def modifiedFilesList = env.MODIFIED_FILES.split(',')
 
                     validateSyntax(modifiedFilesList)
