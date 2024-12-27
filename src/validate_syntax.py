@@ -1,7 +1,14 @@
 import subprocess
+import argparse
 import sys
 
-def validate_syntax(modified_files):
+def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--MODIFIED_FILES", action="store", type=str, help="Modified file list")
+
+    modified_files = args.MODIFIED_FILES
+
     has_errors = False
     files = modified_files.split(',')
 
@@ -82,14 +89,6 @@ def validate_syntax(modified_files):
         raise Exception("Syntax validation failed. Please fix the issues and try again.")
     else:
         print("Syntax validation passed successfully.")
-
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python validate_syntax.py <modified_files>")
-        sys.exit(1)
-
-    modified_files = sys.argv[1]
-    validate_syntax(modified_files)
 
 if __name__ == '__main__':
     main()

@@ -78,7 +78,7 @@ pipeline {
             steps {
                 script {
                     // Load the external syntax validation script
-                    sh "python3 src/validate_syntax.py ${env.MODIFIED_FILES}"
+                    sh "python3 src/validate_syntax.py -f '${env.MODIFIED_FILES}'"
                 }
             }
         }
