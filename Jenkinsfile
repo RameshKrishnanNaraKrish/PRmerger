@@ -83,7 +83,7 @@ pipeline {
         stage('Create JIRA Ticket') {
             steps {
                 script {
-                    sh "python3 src/Jira_create.py -u '${env.JIRA_URL}'  -a '${env.JIRA_API_TOKEN}' -p '${env.JIRA_PROJECT_KEY}' -pr '${env.PR_ID}' -ju '${env.JIRA_USERNAME}' -bu '${env.USER_FULL_NAME}' -r '${env.REPO}'"
+                    sh "python3 src/Jira_create.py -u '${env.JIRA_URL}'  -a '${env.JIRA_API_TOKEN}' -p '${env.JIRA_PROJECT_KEY}' --pr '${env.PR_ID}' --ju '${env.JIRA_USERNAME}' --bu '${env.USER_FULL_NAME}' -r '${env.REPO}'"
                 }
             }
         }

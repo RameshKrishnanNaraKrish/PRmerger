@@ -7,7 +7,7 @@ def main():
     parser.add_argument("-u", "--url", action="store", type=str, help="JIRA URL")
     parser.add_argument("-a", "--apitoken", action="store", type=str, help="JIRA API Token")
     parser.add_argument("-p", "--projectkey", action="store", type=str, help="JIRA Project Key")
-    parser.add_argument("--pr", "prid", action="store", type=str, help="Pull Request ID")
+    parser.add_argument("--pr", "--prid", action="store", type=str, help="Pull Request ID")
     parser.add_argument("--ju", "--jirausername", action="store", type=str, help="JIRA Username")
     parser.add_argument("--bu", "--buildusername", action="store", type=str, help="${USER FULL NAME}")
     parser.add_argument("-r", "--repo", action="store", type=str, help="REPO")
