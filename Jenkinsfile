@@ -52,7 +52,7 @@ pipeline {
             }
         }
 
-        stage('Fetch PR Details') {
+        stage('Fetch PR Title') {
             steps {
                 script {
                     // Fetch pull request details using GitHub API
@@ -69,8 +69,20 @@ pipeline {
                     // Access PR title
                     def prTitle = pr.title
 
-                    echo "PR Title: ${prTitle}"      
+                    echo "PR Title: ${prTitle}"
 
+                    if (!prTitle.contains("quick fix") || !prTitle.contains("quickfix")) {
+                        error "Pipeline aborted: PR title do not contain 'quick fix'."
+                    }       
+
+                    echo "PR is valid. Proceeding with pipeline."
+                }
+            }
+        }
+
+        stage('Fetch PR Comments') {
+            steps {
+                script {      
                     // Fetch pull request comments
                     def commentsDetails = sh(
                         script: """
@@ -81,6 +93,7 @@ pipeline {
                     
                     echo "comments Data: ${commentsDetails}"
 
+                    def jsonSlurper = new groovy.json.JsonSlurper()
                     def commentsData = jsonSlurper.parseText(commentsDetails)
 
                     echo "comments Data: ${commentsData}"
@@ -90,8 +103,8 @@ pipeline {
                     echo "comments Body: ${commentsBody}"
 
                     // Check conditions
-                    if (!prTitle.contains("quick fix") || !commentsBody.contains("quick fix") || !prTitle.contains("quickfix")) {
-                        error "Pipeline aborted: PR title or comments do not contain 'quick fix'."
+                    if (!commentsBody.contains("quick fix")) {
+                        error "Pipeline aborted: PR comments do not contain 'quick fix'."
                     }       
 
                     echo "PR is valid. Proceeding with pipeline."
