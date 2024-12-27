@@ -77,7 +77,9 @@ pipeline {
                             curl -s -H "Accept: application/vnd.github.v3+json" \
                             ${GITHUB_API_URL}/${env.OWNER}/${env.REPO}/issues/${env.PR_ID}/comments""",
                         returnStdout: true
-                    ).trim()        
+                    ).trim()
+                    
+                    echo "comments Data: ${commentsDetails}"
 
                     def commentsData = jsonSlurper.parseText(commentsDetails)
 
