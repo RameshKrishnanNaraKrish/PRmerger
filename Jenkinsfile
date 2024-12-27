@@ -103,7 +103,7 @@ pipeline {
                     echo "comments Body: ${commentsBody}"
 
                     // Check conditions
-                    if (!commentsBody.contains("quick fix")) {
+                    if (!commentsBody.contains("quick fix") && !commentsBody.contains("quickfix")) {
                         error "Pipeline aborted: PR comments do not contain 'quick fix'."
                     }       
 
